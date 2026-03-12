@@ -1,5 +1,9 @@
 from databricks.connect import DatabricksSession
 import os
+from dotenv import load_dotenv
+
+# Carrega variáveis do arquivo .env
+load_dotenv()
 
 def test_connection():
     print("Tentando conectar ao Databricks via Databricks Connect...")
