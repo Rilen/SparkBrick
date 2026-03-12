@@ -4,12 +4,12 @@ resources:
       name: SparkBrick_Main_Pipeline
       tasks:
         - task_key: run_pipeline
-          # O Databricks converterá o hardware para serverless se o campo estiver vazio mas o task_key existir
           new_cluster:
             spark_version: 14.3.x-scala2.12
-            # Deixando sem node_type_id e num_workers para o backend serverless assumir
+            num_workers: 0 # Modo Single User / Serverless friendly
           spark_python_task:
             python_file: ../src/main_interactive.py
+
 
 
 
