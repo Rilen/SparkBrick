@@ -1,0 +1,20 @@
+bundle:
+  name: sparkbrick
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://dbc-394b14d9-02a7.cloud.databricks.com
+      
+  prod:
+
+    workspace:
+      host: https://adb-prod-xxx.azuredatabricks.net
+    mode: production
+
+
+

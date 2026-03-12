@@ -1,0 +1,16 @@
+resources:
+  jobs:
+    sparkbrick_job:
+      name: SparkBrick_Main_Pipeline
+      tasks:
+        - task_key: run_pipeline
+          # Para Serverless, não usamos job_cluster_key
+          spark_python_task:
+            python_file: ../src/main_interactive.py
+      
+      # Ativa o modo de fila serverless
+      queue_settings:
+        enabled: true
+
+
+
