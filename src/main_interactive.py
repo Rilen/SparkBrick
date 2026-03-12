@@ -1,7 +1,12 @@
+import os
 import requests
+from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, lit, col
 from src.transformations import transform_silver, aggregate_gold
+
+# Carrega variáveis do arquivo .env (Host, Token, Serverless)
+load_dotenv()
 
 # Este script foi desenhado para rodar via Databricks Interactive Cluster
 # Ele consome dados reais da API CoinGecko e percorre as 3 camadas da Medallion Architecture
@@ -55,8 +60,22 @@ def run_full_pipeline(spark: SparkSession, symbol="bitcoin", write_to_uc=False):
         df_gold.show()
 
 if __name__ == "__main__":
-    spark = SparkSession.builder.getOrCreate()
+    # Configuração para Databricks Connect
+    try:
+        from databricks.connect import DatabricksSession
+        builder = DatabricksSession.builder
+        
+        if os.getenv("DATABRICKS_SERVERLESS") == "true":
+            print("[Sessão] Inicializando modo Serverless...")
+            builder = builder.serverless()
+            
+        spark = builder.getOrCreate()
+    except ImportError:
+        # Fallback para Spark local ou Cluster Interativo tradicional
+        print("[Sessão] Databricks Connect não encontrado, usando SparkSession padrão...")
+        spark = SparkSession.builder.getOrCreate()
     
-    # IMPORTANTE: Mude para write_to_uc=True apenas após executar o script SQL de setup
+    # Executa o pipeline enviando os resultados para o Unity Catalog (sparkbrick.camada.tabela)
+    # Certifique-se de que os Schemas (bronze, silver, gold) existam no catálogo sparkbrick
     run_full_pipeline(spark, symbol="ethereum", write_to_uc=True)
 
